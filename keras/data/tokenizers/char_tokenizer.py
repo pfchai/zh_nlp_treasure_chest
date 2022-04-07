@@ -2,9 +2,16 @@
 
 
 class CharTokenizer():
-    def __init__(self, token_dict):
-        self.token_dict = token_dict
-        self.token_dict_inv = {v: k for k, v in token_dict.items()}
+    def __init__(self, token_dict=None, token_dict_inv=None, vocabulary=None):
+        if token_dict:
+            self.token_dict = token_dict
+            if token_dict_inv is None:
+                self.token_dict_inv = {v: k for k, v in token_dict.items()}
+        elif vocabulary:
+            self.token_dict = vocabulary.token_dict
+            self.token_dict_inv = vocabulary.token_dict_inv
+
+        self.vocab_size = len(self.token_dict)
 
     def encode(self, text: str) -> list:
         tokens = []
