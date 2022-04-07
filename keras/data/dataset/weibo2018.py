@@ -6,16 +6,17 @@ import re
 from keras.utils.np_utils import to_categorical
 from keras.preprocessing.sequence import pad_sequences
 
+
 class WeiBo2018():
     def __init__(self):
         project_path = os.environ.get('ZH_NLP_DEMO_PATH')
         self.dataset_path = os.path.join(project_path, 'dataset/weibo2018')
         self.dataset_name = 'weibo2018'
         self.dataset_task_type = 'classification'
-        # 语料库相关配置
-        self.model_config = {
-            'class_num': 2,
-        }
+
+    def update_model_config(self, config):
+        config['class_num'] = 2
+        return config
 
     def process(self, text: str) -> str:
         """数据处理，清洗"""

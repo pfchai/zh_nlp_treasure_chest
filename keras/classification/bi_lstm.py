@@ -8,8 +8,9 @@ from keras.models import Sequential
 from keras.layers.embeddings import Embedding
 from keras.layers import Dense, Bidirectional, LSTM, Dropout
 
+from zh_nlp_demo.keras.classification.utils import create_parser
+from zh_nlp_demo.keras.classification.utils import create_dataset
 from zh_nlp_demo.keras.trainer import Trainer
-from zh_nlp_demo.keras.data.dataset.weibo2018 import WeiBo2018
 from zh_nlp_demo.keras.data.vocabulary import Vocabulary
 from zh_nlp_demo.keras.data.tokenizers.char_tokenizer import CharTokenizer
 
@@ -44,24 +45,15 @@ def make_model(config):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='基于双向LSTM的文本分类')
-    parser.add_argument(
-        '--dataset', type=str, default='weibo2018',
-        choices=('weibo2018',), help='指定数据集'
-    )
-    parser.add_argument('--do_train', action='store_true', default=False)
-    parser.add_argument('--do_test', action='store_true', default=False)
+    parser = create_parser(description='基于双向LSTM的文本分类')
     args = parser.parse_args()
 
     config = default_config
 
     # 数据集
-    if args.dataset == 'weibo2018':
-        config['class_num'] = 2
-        dataset = WeiBo2018()
-        config.update(dataset.model_config)
-    else:
-        raise '不支持的数据集'
+    dataset = create_dataset(args)
+    config = dataset.update_model_config(config)
+    print('dataset load finished')
 
     vocabulary = Vocabulary()
     vocabulary.create_from_file()
@@ -69,6 +61,7 @@ if __name__ == "__main__":
     config['vocab_size'] = tokenizer.vocab_size
 
     model = make_model(config)
+    model.summary()
 
     trainer = Trainer(model_name='bi-lstm', dataset=dataset, tokenizer=tokenizer, model=model)
 
