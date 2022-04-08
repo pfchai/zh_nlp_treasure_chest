@@ -24,17 +24,17 @@ def create_parser(description='文本分类'):
 def create_dataset(args):
     if args.dataset == 'weibo2018':
         dataset = WeiBo2018()
-    elif args.dataset == 'cal2018_accu_e':
+    elif args.dataset == 'cail2018_accu_e':
         dataset = CAIL2018(task_name='accusation', sub_data='exercise')
-    elif args.dataset == 'cal2018_accu_fs':
+    elif args.dataset == 'cail2018_accu_fs':
         dataset = CAIL2018(task_name='accusation', sub_data='first_stage')
-    elif args.dataset == 'cal2018_ra_e':
+    elif args.dataset == 'cail2018_ra_e':
         dataset = CAIL2018(task_name='relevant_articles', sub_data='exercise')
-    elif args.dataset == 'cal2018_ra_fs':
+    elif args.dataset == 'cail2018_ra_fs':
         dataset = CAIL2018(task_name='relevant_articles', sub_data='first_stage')
-    elif args.dataset == 'cal2018_toi_e':
+    elif args.dataset == 'cail2018_toi_e':
         dataset = CAIL2018(task_name='term_of_imprisonment', sub_data='exercise')
-    elif args.dataset == 'cal2018_toi_fs_e':
+    elif args.dataset == 'cail2018_toi_fs_e':
         dataset = CAIL2018(task_name='term_of_imprisonment', sub_data='first_stage')
     else:
         raise '不支持的数据集'

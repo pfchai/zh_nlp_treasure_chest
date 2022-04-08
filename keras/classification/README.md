@@ -4,6 +4,17 @@
 
 1. weibo2018
 
+## 支持的模型架构
+
+ - [x] LSTM
+ - [x] 双向LSTM
+ - [x] 双向LSTM + Attention
+ - [ ] CNN
+ - [ ] Bert
+ - [ ] ERNIE
+ - [ ] Bert + LSTM
+
+
 ## 模型架构
 
 ### LSTM

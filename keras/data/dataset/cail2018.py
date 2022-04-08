@@ -5,12 +5,14 @@ import re
 import json
 
 import numpy as np
-
 from keras.utils.np_utils import to_categorical
 from keras.preprocessing.sequence import pad_sequences
+from sklearn.model_selection import train_test_split
+
+from zh_nlp_demo.keras.data.dataset.base_dataset import BaseDataset
 
 
-class CAIL2018():
+class CAIL2018(BaseDataset):
     def __init__(self, task_name='accusation', sub_data='exercise'):
         """
         task_name: 任务名称
@@ -26,25 +28,16 @@ class CAIL2018():
         self.sub_data = sub_data
         self.dataset_name = 'CAIL2018'
         self.dataset_task_type = 'classification'
+        self.input_len = 500
 
-        project_path = os.environ.get('ZH_NLP_DEMO_PATH')
-        if sub_data == 'exercise':
-            self.dataset_path = os.path.join(project_path, 'dataset/CAIL2018/final_all_data/exercise_contest')
-            self.train_data = os.path.join(self.dataset_path, 'data_train.json')
-            self.test_data = os.path.join(self.dataset_path, 'data_train.json')
-        elif sub_data == 'first_stage':
-            self.dataset_path = os.path.join(project_path, 'dataset/CAIL2018/final_all_data/first_stage')
-            self.train_data = os.path.join(self.dataset_path, 'train.json')
-            self.test_data = os.path.join(self.dataset_path, 'train.json')
-        else:
-            raise '无效数据集'
+        self.project_path = os.environ.get('ZH_NLP_DEMO_PATH')
 
         # 语料库相关配置
-        if task_name == 'accusation':
+        if self.task_name == 'accusation':
             self.label_count = 202
-        elif task_name == 'relevant_articles':
+        elif self.task_name == 'relevant_articles':
             self.label_count = 183
-        elif task_name == 'term_of_imprisonment':
+        elif self.task_name == 'term_of_imprisonment':
             # 0-25年 单位为月 25*12=300; 无期: 301; 死刑: 302
             self.label_count = 303
         else:
@@ -52,13 +45,13 @@ class CAIL2018():
 
         # 标签编号字典
         self.accu_dict = {}
-        accu_dict_path = os.path.join(project_path, 'dataset/CAIL2018/final_all_data/accu.txt')
+        accu_dict_path = os.path.join(self.project_path, 'dataset/CAIL2018/final_all_data/accu.txt')
         with open(accu_dict_path, 'r', encoding='utf-8') as f:
             for index, line in enumerate(f):
                 self.accu_dict[line.strip()] = index
 
         self.law_dict = {}
-        law_dict_path = os.path.join(project_path, 'dataset/CAIL2018/final_all_data/law.txt')
+        law_dict_path = os.path.join(self.project_path, 'dataset/CAIL2018/final_all_data/law.txt')
         with open(law_dict_path, 'r', encoding='utf-8') as f:
             for index, line in enumerate(f):
                 self.law_dict[int(line.strip())] = index
@@ -69,15 +62,6 @@ class CAIL2018():
             config['activation'] = 'sigmoid'
             config['compile']['loss'] = 'binary_crossentropy'
         return config
-
-    def get_train_data(self):
-        train_x, train_y = [], []
-        with open(self.train_data, 'r', encoding='utf-8') as f:
-            for line in f:
-                data = json.loads(line)
-                train_x.append(data['fact'])
-                train_y.append(data['meta'][self.task_name])
-        return train_x, train_y
 
     def encode_Y(self, raw_Y):
         Y = []
@@ -111,12 +95,60 @@ class CAIL2018():
             Y = to_categorical(Y, self.label_count)
         return Y
 
+    def get_data(self, file_name):
+        train_x, train_y = [], []
+        with open(file_name, 'r', encoding='utf-8') as f:
+            for line in f:
+                data = json.loads(line)
+                train_x.append(data['fact'])
+                train_y.append(data['meta'][self.task_name])
+        return train_x, train_y
+
+    def get_train_data(self):
+        if self.sub_data == 'exercise':
+            dataset_path = os.path.join(self.project_path, 'dataset/CAIL2018/final_all_data/exercise_contest')
+            train_file_path = os.path.join(dataset_path, 'data_train.json')
+            valid_file_path = os.path.join(dataset_path, 'data_valid.json')
+            train_x, train_y = self.get_data(train_file_path)
+            valid_x, valid_y = self.get_data(valid_file_path)
+
+        if self.sub_data == 'first_stage':
+            dataset_path = os.path.join(self.project_path, 'dataset/CAIL2018/final_all_data/first_stage')
+            train_file_path = os.path.join(self.dataset_path, 'train.json')
+            train_x, train_y = self.get_data(train_file_path)
+            train_x, valid_x, train_y, valid_y = train_test_split(train_x, train_y, test_size=0.1, random_state=42)
+
+        return train_x, train_y, valid_x, valid_y
+
+    def get_test_data(self):
+        if self.sub_data == 'exercise':
+            dataset_path = os.path.join(self.project_path, 'dataset/CAIL2018/final_all_data/exercise_contest')
+            file_path = os.path.join(dataset_path, 'data_test.json')
+            X, Y = self.get_data(file_path)
+
+        if self.sub_data == 'first_stage':
+            dataset_path = os.path.join(self.project_path, 'dataset/CAIL2018/final_all_data/first_stage')
+            file_path = os.path.join(self.dataset_path, 'test.json')
+            X, Y = self.get_data(file_path)
+
+        return X, Y
+
     def get_train_input_data(self, tokenizer):
-        raw_X, raw_Y = self.get_train_data()
-        tokens = [tokenizer.encode(text) for text in raw_X]
-        X = pad_sequences(tokens, maxlen=500)
-        Y = self.encode_Y(raw_Y)
-        return (X, Y)
+        train_X, train_Y, valid_X, valid_Y = self.get_train_data()
+        train_tokens = [tokenizer.encode(text) for text in train_X]
+        valid_tokens = [tokenizer.encode(text) for text in valid_X]
+        train_X = pad_sequences(train_tokens, maxlen=self.input_len)
+        valid_X = pad_sequences(valid_tokens, maxlen=self.input_len)
+        train_Y = self.encode_Y(train_Y)
+        valid_Y = self.encode_Y(valid_Y)
+        return train_X, train_Y, valid_X, valid_Y
+
+    def get_test_input_data(self, tokenizer):
+        test_X, test_Y = self.get_test_data()
+        tokens = [tokenizer.encode(text) for text in test_X]
+        X = pad_sequences(tokens, maxlen=self.input_len)
+        Y = self.encode_Y(test_Y)
+        return X, Y
 
 
 if __name__ == '__main__':
