@@ -135,10 +135,8 @@ class CAIL2018(BaseDataset):
 
     def get_train_input_data(self, tokenizer):
         train_X, train_Y, valid_X, valid_Y = self.get_train_data()
-        train_tokens = [tokenizer.encode(text) for text in train_X]
-        valid_tokens = [tokenizer.encode(text) for text in valid_X]
-        train_X = pad_sequences(train_tokens, maxlen=self.input_len)
-        valid_X = pad_sequences(valid_tokens, maxlen=self.input_len)
+        train_X = tokenizer.encode_X(train_X, self.input_len)
+        valid_X = tokenizer.encode_X(valid_X, self.input_len)
         train_Y = self.encode_Y(train_Y)
         valid_Y = self.encode_Y(valid_Y)
         return train_X, train_Y, valid_X, valid_Y

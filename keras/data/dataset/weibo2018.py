@@ -56,10 +56,14 @@ class WeiBo2018(BaseDataset):
 
     def get_train_input_data(self, tokenizer):
         raw_x, raw_y = self.get_train_data()
-        tokens = [tokenizer.encode(text) for text in raw_x]
-        X = pad_sequences(tokens, maxlen=self.input_len)
-        Y = to_categorical(raw_y, self.class_num)
-        train_X, valid_X, train_Y, valid_Y = train_test_split(X, Y, test_size=0.1, random_state=42)
+        train_raw_x, valid_raw_x, train_raw_y, valid_raw_y = train_test_split(
+            raw_x, raw_y, test_size=0.1, random_state=42
+        )
+        train_X = tokenizer.encode_X(train_raw_x, self.input_len)
+        valid_X = tokenizer.encode_X(valid_raw_x, self.input_len)
+        train_Y = to_categorical(train_raw_y, self.class_num)
+        valid_Y = to_categorical(valid_raw_y, self.class_num)
+
         return train_X, train_Y, valid_X, valid_Y
 
     def get_test_input_data(self, tokenizer):

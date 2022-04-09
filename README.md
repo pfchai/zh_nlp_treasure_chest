@@ -34,3 +34,5 @@ conda create -n zh_nlp_demo python=3.6
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+~~部分代码用到了PaddlePaddle，安装请参考[这里](https://www.paddlepaddle.org.cn/install/quick)~~

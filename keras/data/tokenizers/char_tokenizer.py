@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from typing import List
+
+from keras.preprocessing.sequence import pad_sequences
+
 
 class CharTokenizer():
     def __init__(self, token_dict=None, token_dict_inv=None, vocabulary=None):
@@ -25,3 +29,8 @@ class CharTokenizer():
         for token in tokens:
             char_list.append(self.token_dict_inv.get(token, '[UNK]'))
         return ''.join(char_list)
+
+    def encode_X(self, texts: List[str], maxlen: int) -> List:
+        tokens = [self.encode(text) for text in texts]
+        X = pad_sequences(tokens, maxlen=maxlen)
+        return X

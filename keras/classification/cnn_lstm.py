@@ -5,7 +5,7 @@ import warnings
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers.embeddings import Embedding
-from keras.layers import Dense, Bidirectional, LSTM, Dropout
+from keras.layers import Dense, LSTM, Dropout, Conv1D, MaxPooling1D
 
 from zh_nlp_demo.keras.classification.utils import create_parser
 from zh_nlp_demo.keras.classification.utils import create_dataset
@@ -22,28 +22,36 @@ tf.compat.v1.set_random_seed(42)
 default_config = {
     'vocab_size': 7000,
     'emb_hidden_size': 64,
+    'filters': 256,
+    'kernel_size': 3,
     'class_num': 2,
+    'activation': 'softmax',
+    'compile': {
+        'loss': 'categorical_crossentropy',
+        'optimizer': 'adam'
+    },
     'train_config': {
         'batch_size': 256,
         'epochs': 10,
         'verbose': 1,
-    }
+    },
 }
 
 
 def make_model(config):
     model = Sequential()
     model.add(Embedding(config['vocab_size'], 64))
-    model.add(Bidirectional(LSTM(128, dropout=0.5, recurrent_dropout=0.2, return_sequences=True)))
-    model.add(Bidirectional(LSTM(128, dropout=0.5, recurrent_dropout=0.2)))
+    model.add(Conv1D(config['filters'], config['kernel_size'], padding='valid', activation='relu', strides=1))
+    model.add(MaxPooling1D())
+    model.add(LSTM(128))
     model.add(Dropout(0.2))
-    model.add(Dense(config['class_num'], activation='softmax'))
-    model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
+    model.add(Dense(config['class_num'], activation=config['activation']))
+    model.compile(loss=config['compile']['loss'], optimizer=config['compile']['optimizer'], metrics=['accuracy'])
     return model
 
 
 if __name__ == "__main__":
-    parser = create_parser(description='基于双向LSTM的文本分类')
+    parser = create_parser(description='基于CNN+LSTM的文本分类')
     args = parser.parse_args()
 
     config = default_config
@@ -61,7 +69,7 @@ if __name__ == "__main__":
     model = make_model(config)
     model.summary()
 
-    trainer = Trainer(model_name='bi-lstm', dataset=dataset, tokenizer=tokenizer, model=model)
+    trainer = Trainer(model_name='lstm', dataset=dataset, tokenizer=tokenizer, model=model)
 
     if args.do_train:
         trainer.train(config['train_config'])

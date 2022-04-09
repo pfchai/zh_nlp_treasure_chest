@@ -8,8 +8,8 @@ from zh_nlp_demo.keras.data.dataset.cail2018 import CAIL2018
 
 def create_parser(description='文本分类'):
     support_dataset = (
-        'weibo2018', 'cal2018_accu_e', 'cal2018_accu_fs',
-        'cal2018_ra_e', 'cal2018_ra_fs', 'cal2018_toi_e', 'cal2018_toi_fs'
+        'weibo2018', 'cail2018_accu_e', 'cail2018_accu_fs',
+        'cail2018_ra_e', 'cail2018_ra_fs', 'cail2018_toi_e', 'cail2018_toi_fs'
     )
     parser = argparse.ArgumentParser(description='基于LSTM的文本分类')
     parser.add_argument(

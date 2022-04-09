@@ -3,16 +3,18 @@
 ## 数据集
 
 1. weibo2018
+2. CAIL2018
 
 ## 支持的模型架构
 
  - [x] LSTM
- - [x] 双向LSTM
- - [x] 双向LSTM + Attention
- - [ ] CNN
- - [ ] Bert
- - [ ] ERNIE
- - [ ] Bert + LSTM
+ - [x] BiLSTM
+ - [x] BiLSTM + Attention
+ - [x] CNN
+ - [x] CNN+LSTM
+ - [x] Bert
+ - [ ] ERNIE 需要用到PaddlePaddle 且官方给的示例代码太啰嗦了，有时间再实现吧
+ - [x] Bert + LSTM
 
 
 ## 模型架构

@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import os
 import warnings
 
+import keras
 import tensorflow as tf
-from keras.models import Sequential
-from keras.layers.embeddings import Embedding
-from keras.layers import Dense, LSTM, Dropout
+from keras.layers import Dense, Dropout
+from bert4keras.models import build_transformer_model
 
 from zh_nlp_demo.keras.classification.utils import create_parser
 from zh_nlp_demo.keras.classification.utils import create_dataset
 from zh_nlp_demo.keras.trainer import Trainer
-from zh_nlp_demo.keras.data.vocabulary import Vocabulary
-from zh_nlp_demo.keras.data.tokenizers.char_tokenizer import CharTokenizer
+from zh_nlp_demo.keras.data.tokenizers.bert_tokenizer import BertTokenizer
 
 
 warnings.filterwarnings("ignore")
@@ -29,26 +29,39 @@ default_config = {
         'optimizer': 'adam'
     },
     'train_config': {
-        'batch_size': 256,
+        'batch_size': 16,
         'epochs': 10,
         'verbose': 1,
     },
 }
 
 
+project_path = os.environ.get('ZH_NLP_DEMO_PATH')
+pre_train_model_path = os.path.join(project_path, 'pre_train/tensorflow/Chinese_BERT_wwm/BERT_wwm_ext/')
+config_path = os.path.join(pre_train_model_path, 'bert_config.json')
+checkpoint_path = os.path.join(pre_train_model_path, 'bert_model.ckpt')
+dict_path = os.path.join(pre_train_model_path, 'vocab.txt')
+
+
 def make_model(config):
-    model = Sequential()
-    model.add(Embedding(config['vocab_size'], 64))
-    model.add(LSTM(128, dropout=0.5, recurrent_dropout=0.2, return_sequences=True))
-    model.add(LSTM(128, dropout=0.5, recurrent_dropout=0.2))
-    model.add(Dropout(0.2))
-    model.add(Dense(config['class_num'], activation=config['activation']))
+    bert = build_transformer_model(
+        config_path=config_path,
+        checkpoint_path=checkpoint_path,
+        with_pool=True,
+        return_keras_model=False,
+    )
+
+    output = Dropout(rate=0.1)(bert.model.output)
+    output = Dense(
+        units=config['class_num'], activation=config['activation'], kernel_initializer=bert.initializer
+    )(output)
+    model = keras.models.Model(bert.model.input, output)
     model.compile(loss=config['compile']['loss'], optimizer=config['compile']['optimizer'], metrics=['accuracy'])
     return model
 
 
 if __name__ == "__main__":
-    parser = create_parser(description='基于LSTM的文本分类')
+    parser = create_parser(description='基于Bert的文本分类')
     args = parser.parse_args()
 
     config = default_config
@@ -58,10 +71,7 @@ if __name__ == "__main__":
     config = dataset.update_model_config(config)
     print('dataset load finished')
 
-    vocabulary = Vocabulary()
-    vocabulary.create_from_file()
-    tokenizer = CharTokenizer(vocabulary=vocabulary)
-    config['vocab_size'] = tokenizer.vocab_size
+    tokenizer = BertTokenizer(dict_path)
 
     model = make_model(config)
     model.summary()
