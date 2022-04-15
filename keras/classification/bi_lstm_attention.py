@@ -107,7 +107,7 @@ if __name__ == "__main__":
     model = make_model(config)
     model.summary()
 
-    trainer = Trainer(model_name='bi-lstm', dataset=dataset, tokenizer=tokenizer, model=model)
+    trainer = Trainer(model_name='classification_bi_lstm_attention', dataset=dataset, tokenizer=tokenizer, model=model)
 
     if args.do_train:
         trainer.train(config['train_config'])

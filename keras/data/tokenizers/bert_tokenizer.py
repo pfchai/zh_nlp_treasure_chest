@@ -6,15 +6,10 @@ from bert4keras.tokenizers import Tokenizer
 from bert4keras.snippets import sequence_padding
 
 
-class BertTokenizer():
+class BertTokenizer(Tokenizer):
     def __init__(self, dict_path):
-        self.tokenizer = Tokenizer(dict_path, do_lower_case=True)
-
-    def encode(self, text1: str, text2: str, maxlen: int) -> list:
-        return self.tokenizer.encode(text1, text2, maxlen=maxlen)
-
-    def decode(self, ids, tokens=None):
-        return self.tokenizer.decode(ids, tokens)
+        super(BertTokenizer, self).__init__(dict_path, do_lower_case=True)
+        self.tokenizer_type = 'bert'
 
     def encode_X(self, texts: List, maxlen: int) -> List:
         batch_token_ids, batch_segment_ids = [], []
@@ -24,7 +19,7 @@ class BertTokenizer():
                 text2 = None
             if isinstance(text, list):
                 text1, text2 = text[0], text[1]
-            token_ids, segment_ids = self.tokenizer.encode(
+            token_ids, segment_ids = self.encode(
                 text1, text2, maxlen=maxlen
             )
             batch_token_ids.append(token_ids)

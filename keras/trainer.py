@@ -26,15 +26,16 @@ class Trainer():
         self.dataset = dataset
         self.tokenizer = tokenizer
         self.model = model
+        self.monitor = 'val_accuracy'
 
     def train(self, fit_args):
         train_x, train_y, valid_x, valid_y = self.dataset.get_train_input_data(self.tokenizer)
 
         checkpoint_file = os.path.join(
             self.checkpoint_dir,
-            f'{self.model_name}_' + '{epoch:03d}_acc{val_accuracy:.2f}.hdf5'
+            f'{self.model_name}_' + '{epoch:03d}_acc{' + self.monitor + ':.2f}.hdf5'
         )
-        checkpoint = ModelCheckpoint(checkpoint_file, monitor='val_accuracy', verbose=1, save_best_only=True)
+        checkpoint = ModelCheckpoint(checkpoint_file, monitor=self.monitor, verbose=1, save_best_only=True)
         tensorboard = TensorBoard(log_dir=self.log_dir)
 
         self.model.fit(

@@ -16,6 +16,7 @@ class CharTokenizer():
             self.token_dict_inv = vocabulary.token_dict_inv
 
         self.vocab_size = len(self.token_dict)
+        self.tokenizer_type = 'char'
 
     def encode(self, text: str) -> list:
         tokens = []

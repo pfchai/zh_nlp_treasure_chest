@@ -11,7 +11,7 @@ def create_parser(description='文本分类'):
         'weibo2018', 'cail2018_accu_e', 'cail2018_accu_fs',
         'cail2018_ra_e', 'cail2018_ra_fs', 'cail2018_toi_e', 'cail2018_toi_fs'
     )
-    parser = argparse.ArgumentParser(description='基于LSTM的文本分类')
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
         '--dataset', type=str, default='weibo2018',
         choices=support_dataset, help='指定数据集'
