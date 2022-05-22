@@ -55,6 +55,10 @@
  - description: 刑期长短包括0-25年、无期、死刑
  - labels: `多分类`
 
+### 细粒度用户评论情感分析
+
+[Sentiment-Analysis](https://github.com/foamliu/Sentiment-Analysis)
+
 
 ## Named Entity Recognition
 
