@@ -35,4 +35,8 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+## ToDo
+
+发现自己思路走歪了，之前想搞个大而全的，如果只有我个人维护，一方面自己用过的模型不多，经验欠缺；另一方面工作量也非常巨大。因此，转换思路，聚焦经典算法，数据集也不追求多，每种类型数据集各一种即可。
+
 ~~部分代码用到了PaddlePaddle，安装请参考[这里](https://www.paddlepaddle.org.cn/install/quick)~~
