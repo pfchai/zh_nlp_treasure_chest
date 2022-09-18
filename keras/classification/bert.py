@@ -5,7 +5,8 @@ import warnings
 
 import keras
 import tensorflow as tf
-from keras.layers import Dense, Dropout
+from bert4keras.backend import set_gelu
+from keras.layers import Dense, Dropout, Lambda
 from bert4keras.models import build_transformer_model
 
 from zh_nlp_demo.keras.classification.utils import create_parser
@@ -14,6 +15,7 @@ from zh_nlp_demo.keras.trainer import Trainer
 from zh_nlp_demo.keras.data.tokenizers.bert_tokenizer import BertTokenizer
 
 
+set_gelu('tanh')  # 切换gelu版本
 warnings.filterwarnings("ignore")
 tf.compat.v1.set_random_seed(42)
 
@@ -37,7 +39,7 @@ default_config = {
 
 
 project_path = os.environ.get('ZH_NLP_DEMO_PATH')
-pre_train_model_path = os.path.join(project_path, 'pre_train/tensorflow/Chinese_BERT_wwm/BERT_wwm_ext/')
+pre_train_model_path = os.path.join(project_path, 'pre_train/tensorflow/Chinese_BERT_wwm/RoBERTa-wwm-ext/')
 config_path = os.path.join(pre_train_model_path, 'bert_config.json')
 checkpoint_path = os.path.join(pre_train_model_path, 'bert_model.ckpt')
 dict_path = os.path.join(pre_train_model_path, 'vocab.txt')
@@ -47,11 +49,12 @@ def make_model(config):
     bert = build_transformer_model(
         config_path=config_path,
         checkpoint_path=checkpoint_path,
-        with_pool=True,
+        # with_pool=True,
         return_keras_model=False,
     )
 
-    output = Dropout(rate=0.1)(bert.model.output)
+    # output = Dropout(rate=0.1)(bert.model.output)
+    output = Lambda(lambda x: x[:, 0], name='CLS-token')(bert.model.output)
     output = Dense(
         units=config['class_num'], activation=config['activation'], kernel_initializer=bert.initializer
     )(output)

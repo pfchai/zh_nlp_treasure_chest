@@ -130,6 +130,7 @@ dmypy.json
 
 # model output
 outputs/
+log/
 
 # mac
 .DS_Store

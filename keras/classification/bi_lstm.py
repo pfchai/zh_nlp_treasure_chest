@@ -6,6 +6,8 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers.embeddings import Embedding
 from keras.layers import Dense, Bidirectional, LSTM, Dropout
+from sklearn.metrics import classification_report
+from keras.preprocessing.sequence import pad_sequences
 
 from zh_nlp_demo.keras.classification.utils import create_parser
 from zh_nlp_demo.keras.classification.utils import create_dataset
@@ -25,7 +27,7 @@ default_config = {
     'class_num': 2,
     'train_config': {
         'batch_size': 256,
-        'epochs': 10,
+        'epochs': 20,
         'verbose': 1,
     }
 }
@@ -44,6 +46,7 @@ def make_model(config):
 
 if __name__ == "__main__":
     parser = create_parser(description='基于双向LSTM的文本分类')
+    parser.add_argument('--checkpoint_name', help='测试的checkpoint 名称')
     args = parser.parse_args()
 
     config = default_config
@@ -67,4 +70,10 @@ if __name__ == "__main__":
         trainer.train(config['train_config'])
 
     if args.do_test:
-        pass
+        model.load_weights(args.checkpoint_name)
+        test_x, test_y = dataset.get_test_input_data(tokenizer)
+
+        pred_result = model.predict(test_x)
+        pred_y = pred_result.argmax(axis=1)
+        test_y = test_y.argmax(axis=1)
+        print(classification_report(test_y, pred_y))

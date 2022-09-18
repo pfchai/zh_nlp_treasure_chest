@@ -2,6 +2,7 @@
 
 import os
 
+from keras.models import load_model
 from keras.callbacks import ModelCheckpoint, TensorBoard
 
 
@@ -44,3 +45,13 @@ class Trainer():
             callbacks=[checkpoint, tensorboard],
             **fit_args
         )
+
+    def test(self, checkpoint_name):
+        # model = load_model(os.path.join(self.checkpoint_dir, 'best_model.hdf5'))
+        self.model.load_weights(os.path.join(self.checkpoint_dir, checkpoint_name))
+        test_x, test_y = self.dataset.get_test_input_data(self.tokenizer)
+
+        pred_result = self.model.predict(test_x)
+        pred_y = pred_result.argmax(axis=1)
+        test_y = test_y.argmax(axis=1)
+        print(classification_report(test_y, pred_y))
