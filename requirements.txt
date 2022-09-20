@@ -1,13 +1,17 @@
-tensorflow==1.14.0
-tensorflow-gpu==1.14.0
-Keras==2.3.1
+
+tensorflow==2.10.0
+tensorflow_text==2.10.0
+torch==1.9.1
+torchtext==0.10.1
+transformers==4.21.2
+bentoml==1.0.3
+mlflow
 sklearn
-bert4keras
-
-# https://blog.csdn.net/qq_39309652/article/details/119864159
-h5py==2.10
-
 matplotlib
 
-# https://github.com/pytorch/text/
-torchtext==0.10.1
+paddlepaddle==2.3.2
+paddlenlp>=2.0.0rc
+
+
+# jupyter 相关
+ipywidgets

@@ -1,4 +1,5 @@
-# zh_nlp_demo
+# zh_nlp_treasure_chest
+
 中文NLP的一些经典算法实现，只专注于中文NLP领域的算法实现。
 
 
@@ -19,16 +20,18 @@ source initial_environment.sh
 
 如果你对本项目感兴趣，或是想要玩一玩项目中的代码，注意阅读对应目录下的 `README.md` 文件。
 
-关于Python版本，我自己是使用的 Python3.6
+关于Python版本，推荐使用 Python3.8 ，其他Python版本没有做过测试。
 
 ```shell
-conda create -n zh_nlp_demo python=3.6
+conda create -n zh_nlp python=3.8
+conda activate zh_nlp
 ```
 
 
 ### 相关第三方库依赖
 
 用到的第三方库见 `requirements.txt`
+
 
 ```shell
 pip install --upgrade pip
@@ -37,6 +40,4 @@ pip install -r requirements.txt
 
 ## ToDo
 
-发现自己思路走歪了，之前想搞个大而全的，如果只有我个人维护，一方面自己用过的模型不多，经验欠缺；另一方面工作量也非常巨大。因此，转换思路，聚焦经典算法，数据集也不追求多，每种类型数据集各一种即可。
-
-~~部分代码用到了PaddlePaddle，安装请参考[这里](https://www.paddlepaddle.org.cn/install/quick)~~
+部分代码用到了PaddlePaddle，安装请参考[这里](https://www.paddlepaddle.org.cn/install/quick)
