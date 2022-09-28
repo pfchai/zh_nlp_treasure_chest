@@ -273,3 +273,36 @@ class FullTokenizer(object):
 
     def convert_ids_to_tokens(self, ids):
         return convert_by_vocab(self.inv_vocab, ids)
+
+def load_vocab(vocab_file):
+    """Loads a vocabulary file into a dictionary."""
+    vocab = collections.OrderedDict()
+    with open(vocab_file, 'r', encoding='utf-8') as reader:
+        for index, token in enumerate(reader):
+            if not token:
+                break
+            vocab[token.strip()] = index
+    return vocab
+
+class CharTokenizer(object):
+    
+    def __init__(self, vocab_file) -> None:
+        self.vocab = load_vocab(vocab_file)
+        self.inv_vocab = {v: k for k, v in self.vocab.items()}
+
+    def tokenize(self, text):
+        split_tokens = []
+        for token in text:
+            split_tokens.append(token)
+        return split_tokens 
+
+    def convert_tokens_to_ids(self, tokens):
+        output = []
+        for token in tokens:
+            if token not in self.vocab:
+                token = '<UNK>'
+            output.append(self.vocab[token])
+        return output
+
+    def convert_ids_to_tokens(self, ids):
+        return convert_by_vocab(self.inv_vocab, ids)

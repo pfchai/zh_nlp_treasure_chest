@@ -12,6 +12,9 @@ matplotlib
 paddlepaddle==2.3.2
 paddlenlp>=2.0.0rc
 
+pytorch-lightning
+
+tensorflow-addons
 
 # jupyter 相关
 ipywidgets
