@@ -25,22 +25,6 @@ class DataProcessor():
         input_y = np.asarray([keras.utils.to_categorical(seq, num_classes=len(self.label_list)) for seq in tag_seqs])
         return input_y
 
-    def _decode_predict(self, predict):
-        tags = []
-        for categorical in predict:
-            tags.append(self.id2label[np.argmax(categorical)])
-        return tags
-
-    def decode_predict(self, predicts, input_tokens=None):
-        res = []
-        if input_tokens is not None:
-            for predict, tokens in zip(predicts, input_tokens):
-                res.append(self._decode_predict(predict[:len(tokens)]))
-        else:
-            for predict in predicts:
-                res.append(self._decode_predict(predict))
-        return res
-
     def tag_seq_to_entity(self, tokens, tag_seq):
         ret = []
 
@@ -64,9 +48,22 @@ class DataProcessor():
             ret.append([''.join(entity_tokens[0]), entity_tokens[1]])
         return ret
 
-    def predict_to_entity(self, input_tokens, predicts):
+    def predict_to_ids(self, predicts, input_tokens=None):
+        id_seqs = []
+        if input_tokens is not None:
+            for predict, tokens in zip(predicts, input_tokens):
+                id_seqs.append(np.argmax(predict, axis=-1)[:len(tokens)])
+        else:
+            id_seqs = np.argmax(predict, axis=-1)
+        return id_seqs
+
+    def predict_to_label(self, predicts, input_tokens=None):
+        id_seqs = self.predict_to_ids(predicts, input_tokens)
+        return [[self.id2label[i] for i in ids] for ids in id_seqs]
+
+    def predict_to_entity(self, predicts, input_tokens):
         res = []
-        tag_seqs = self.decode_predict(predicts, input_tokens)
+        tag_seqs = self.predict_to_label(predicts, input_tokens)
         for tokens, tag_seq in zip(input_tokens, tag_seqs):
             res.append(self.tag_seq_to_entity(tokens, tag_seq))
         return res
