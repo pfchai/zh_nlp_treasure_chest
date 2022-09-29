@@ -20,7 +20,31 @@ class DataProcessor():
         input_x = keras.preprocessing.sequence.pad_sequences(input_ids, maxlen=self.max_len, padding='post')
         return input_x
 
+    def encode_bert_tokens(self, texts_tokens, add_special_tokens=True):
+        input_id_list, token_type_id_list, attention_mask_list = [], [], []
+
+        for tokens in texts_tokens:
+            inputs = self.tokenizer.encode_plus(tokens, add_special_tokens=add_special_tokens, truncation=True, max_length=self.max_len)
+            input_ids, token_type_ids, attention_masks = inputs["input_ids"], inputs["token_type_ids"], inputs["attention_mask"]
+            attention_mask_list.append(attention_masks)
+            input_id_list.append(input_ids)
+            token_type_id_list.append(token_type_ids)
+
+        input_id_list = keras.preprocessing.sequence.pad_sequences(input_id_list, maxlen=self.max_len, padding='post')
+        token_type_id_list = keras.preprocessing.sequence.pad_sequences(token_type_id_list, maxlen=self.max_len, padding='post')
+        attention_mask_list = keras.preprocessing.sequence.pad_sequences(attention_mask_list, maxlen=self.max_len, padding='post')
+        return [input_id_list, token_type_id_list, attention_mask_list]
+
     def encode_labels(self, labels):
+        tag_seqs = keras.preprocessing.sequence.pad_sequences(labels, maxlen=self.max_len, padding='post')
+        input_y = np.asarray([keras.utils.to_categorical(seq, num_classes=len(self.label_list)) for seq in tag_seqs])
+        return input_y
+
+    def encode_bert_labels(self, labels, add_special_tokens=True, pad_token_label_id=6):
+        if add_special_tokens:
+            labels = [[pad_token_label_id] + ls[:self.max_len - 2] + [pad_token_label_id] for ls in labels]
+        else:
+            labels = [[pad_token_label_id] + ls[:self.max_len] + [pad_token_label_id] for ls in labels]
         tag_seqs = keras.preprocessing.sequence.pad_sequences(labels, maxlen=self.max_len, padding='post')
         input_y = np.asarray([keras.utils.to_categorical(seq, num_classes=len(self.label_list)) for seq in tag_seqs])
         return input_y
