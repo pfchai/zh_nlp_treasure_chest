@@ -40,6 +40,32 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+部分代码用到了PaddlePaddle，安装请参考[这里](https://www.paddlepaddle.org.cn/install/quick)
+
 ## ToDo
 
-部分代码用到了PaddlePaddle，安装请参考[这里](https://www.paddlepaddle.org.cn/install/quick)
+NLP 有关的机器学习任务列表
+
+  - [ ] 文本分类
+  - [ ] 序列标注
+  - [ ] 关系抽取
+  - [ ] 文本匹配
+  - [ ] 摘要抽取
+  - [ ] 对话生成
+
+
+后续会陆续添加训练模型相关的技巧
+
+ - [ ] 训练过程记录，日志相关
+     - [ ] loss/acc 日志
+     - [ ] tensorboard 
+     - [ ] checkpoint
+ - [ ] 模型训练优化器相关
+    - [ ] 经典优化算法 optimizers
+    - [ ] 学习率调度器
+    - [ ] warmup 策略
+ - [ ] 对抗训练
+ - [ ] 模型压缩
+ - [ ] 模型部署
+ - [ ] 模型可视化
+
