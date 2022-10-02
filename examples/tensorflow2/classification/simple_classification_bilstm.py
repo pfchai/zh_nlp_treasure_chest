@@ -4,7 +4,6 @@ import os
 import logging
 import argparse
 import datetime
-from sre_parse import Tokenizer
 
 # Disable Tensorflow log information 
 # https://stackoverflow.com/questions/35911252/disable-tensorflow-debugging-information
