@@ -9,6 +9,11 @@ CRF 的实现参考了项目 https://github.com/ngoquanghuy99/POS-Tagging-BiLSTM
  - https://gitplanet.com/project/bi-lstm-crf-ner-tf20
 
 
+ToDo
+
+ - [ ] 对抗训练，可参考 https://github.com/StanleyLsx/entity_extractor_by_ner
+
+
 ## LSTM + CRF
 
 代码见 `lstm_crf.py` 实现了基础的模型训练、测试、推理的能力。
